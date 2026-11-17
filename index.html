@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta: Uso de gas en la cocina y detector de gas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    min-height: 100vh;
+    padding: 20px;
+    color: #e2e8f0;
+  }
+  .contenedor {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  header h1 {
+    font-size: 1.6rem;
+    color: #fbbf24;
+  }
+  header p {
+    color: #94a3b8;
+    margin-top: 6px;
+    font-size: 0.95rem;
+  }
+  .tarjeta {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3);
+  }
+  .pregunta {
+    margin-bottom: 22px;
+  }
+  .pregunta h3 {
+    font-size: 1rem;
+    color: #f1f5f9;
+    margin-bottom: 10px;
+  }
+  .pregunta h3 .num {
+    color: #fbbf24;
+  }
+  .opciones label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .opciones label:hover {
+    background: #1c3355;
+  }
+  .opciones input[type="radio"] {
+    accent-color: #fbbf24;
+  }
+  .botones {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  button {
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .1s, opacity .15s;
+  }
+  button:hover { transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  .btn-principal { background: #fbbf24; color: #1e293b; }
+  .btn-secundario { background: #334155; color: #e2e8f0; }
+  .btn-peligro { background: #7f1d1d; color: #fecaca; }
+  .mensaje {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: .92rem;
+    display: none;
+  }
+  .mensaje.error { display: block; background: #7f1d1d; color: #fecaca; }
+  .mensaje.ok { display: block; background: #14532d; color: #bbf7d0; }
+
+  .resumen {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .resumen .caja {
+    flex: 1;
+    min-width: 140px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .resumen .caja .grande {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #fbbf24;
+  }
+  .resumen .caja .chico {
+    font-size: .8rem;
+    color: #94a3b8;
+  }
+  .resultado-pregunta {
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed #334155;
+  }
+  .resultado-pregunta:last-child { border-bottom: none; }
+  .resultado-pregunta h4 {
+    color: #f1f5f9;
+    margin-bottom: 4px;
+  }
+  .promedio {
+    color: #fbbf24;
+    font-weight: 600;
+    font-size: .92rem;
+    margin-bottom: 10px;
+  }
+  .fila-resultado {
+    margin-bottom: 8px;
+  }
+  .fila-resultado .etiqueta {
+    display: flex;
+    justify-content: space-between;
+    font-size: .88rem;
+    margin-bottom: 3px;
+  }
+  .barra-fondo {
+    background: #0f172a;
+    border-radius: 6px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .barra {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 6px;
+    transition: width .4s ease;
+  }
+  .sin-datos { color: #94a3b8; font-size: .95rem; }
+  h2 {
+    font-size: 1.15rem;
+    color: #fbbf24;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+<div class="contenedor">
+
+  <header>
+    <h1>🔥 Encuesta sobre uso de gas en la cocina</h1>
+    <p>Hábitos de cocina, revisión de fugas y opinión sobre un detector de gas para el hogar</p>
+  </header>
+
+  <!-- ================= FORMULARIO ================= -->
+  <div class="tarjeta">
+    <div class="pregunta">
+      <h3><span class="num">1.</span> ¿Cada cuánto cocinas en tu casa?</h3>
+      <div class="opciones" data-nombre="cocinas">
+        <label><input type="radio" name="cocinas" value="1"> Todos los días, varias veces al día</label>
+        <label><input type="radio" name="cocinas" value="2"> Todos los días, una vez al día</label>
+        <label><input type="radio" name="cocinas" value="3"> Varias veces por semana</label>
+        <label><input type="radio" name="cocinas" value="4"> Una vez por semana</label>
+        <label><input type="radio" name="cocinas" value="5"> Casi nunca cocino</label>
+      </div>
+    </div>
+
+    <div class="pregunta">
+      <h3><span class="num">2.</span> ¿Cuántas veces prendes la estufa al día?</h3>
+      <div class="opciones" data-nombre="estufa">
+        <label><input type="radio" name="estufa" value="0"> 0 veces (no prendo la estufa)</label>
+        <label><input type="radio" name="estufa" value="1"> 1 vez al día</label>
+        <label><input type="radio" name="estufa" value="2"> 2 veces al día</label>
+        <label><input type="radio" name="estufa" value="3"> 3 veces al día</label>
+        <label><input type="radio" name="estufa" value="5"> Más de 3 veces al día</label>
+      </div>
+    </div>
+
+    <div class="pregunta">
+      <h3><span class="num">3.</span> ¿Cómo te aseguras de que NO hay fuga de gas cada vez que cambias (conectas) el tanque?</h3>
+      <div class="opciones" data-nombre="revision">
+        <label><input type="radio" name="revision" value="1"> Reviso las conexiones con agua jabonosa</label>
+        <label><input type="radio" name="revision" value="2"> Un técnico o alguien con experiencia la instala</label>
+        <label><input type="radio" name="revision" value="3"> Uso un detector u otra herramienta</label>
+        <label><input type="radio" name="revision" value="4"> Solo aprieto la llave y confío</label>
+        <label><input type="radio" name="revision" value="5"> No reviso nada</label>
+      </div>
+    </div>
+
+    <div class="pregunta">
+      <h3><span class="num">4.</span> ¿Cada cuánto cambias o recargas el tanque de gas?</h3>
+      <div class="opciones" data-nombre="cambio">
+        <label><input type="radio" name="cambio" value="1"> Cada 2 semanas o menos</label>
+        <label><input type="radio" name="cambio" value="2"> Una vez al mes</label>
+        <label><input type="radio" name="cambio" value="3"> Cada 1 a 2 meses</label>
+        <label><input type="radio" name="cambio" value="4"> Cada 3 meses o más</label>
+        <label><input type="radio" name="cambio" value="5"> Solo cuando se acaba (sin control)</label>
+      </div>
+    </div>
+
+    <div class="pregunta">
+      <h3><span class="num">5.</span> ¿Usas gas en otro lugar de la casa además de la cocina?</h3>
+      <div class="opciones" data-nombre="otros_lugares">
+        <label><input type="radio" name="otros_lugares" value="1"> No, solo en la cocina</label>
+        <label><input type="radio" name="otros_lugares" value="2"> Sí, en el calentador de agua</label>
+        <label><input type="radio" name="otros_lugares" value="3"> Sí, en la ducha / calefón</label>
+        <label><input type="radio" name="otros_lugares" value="4"> Sí, en varios lugares (cocina + otros)</label>
+        <label><input type="radio" name="otros_lugares" value="5"> No uso gas en mi casa</label>
+      </div>
+    </div>
+
+    <div class="pregunta">
+      <h3><span class="num">6.</span> ¿Usarías un detector de gas en tu cocina / casa?</h3>
+      <div class="opciones" data-nombre="usaria">
+        <label><input type="radio" name="usaria" value="1"> Sí, definitivamente</label>
+        <label><input type="radio" name="usaria" value="2"> Probablemente sí</label>
+        <label><input type="radio" name="usaria" value="3"> No estoy seguro/a</label>
+        <label><input type="radio" name="usaria" value="4"> Probablemente no</label>
+        <label><input type="radio" name="usaria" value="5"> No, no lo usaría</label>
+      </div>
+    </div>
+
+    <div class="botones">
+      <button class="btn-principal" onclick="guardarRespuesta()">💾 Guardar respuesta</button>
+      <button class="btn-secundario" onclick="borrarFormulario()">🧹 Limpiar formulario</button>
+      <button class="btn-secundario" onclick="exportarCSV()">📥 Exportar datos (CSV)</button>
+      <button class="btn-peligro" onclick="reiniciarTodo()">🗑️ Borrar todos los datos</button>
+    </div>
+    <div id="mensaje" class="mensaje"></div>
+  </div>
+
+  <!-- ================= RESULTADOS ================= -->
+  <div class="tarjeta">
+    <h2>📊 Resultados y promedios</h2>
+    <div class="resumen">
+      <div class="caja">
+        <div class="grande" id="totalRespuestas">0</div>
+        <div class="chico">Respuestas totales</div>
+      </div>
+      <div class="caja">
+        <div class="grande" id="pctDetector">—</div>
+        <div class="chico">Usarían el detector de gas</div>
+      </div>
+      <div class="caja">
+        <div class="grande" id="promCocina">—</div>
+        <div class="chico">Frecuencia de cocina (promedio)</div>
+      </div>
+      <div class="caja">
+        <div class="grande" id="promEstufa">—</div>
+        <div class="chico">Veces al día que prenden la estufa (promedio)</div>
+      </div>
+    </div>
+    <div id="resultados"></div>
+  </div>
+
+</div>
+
+<script>
+// =====================================================
+// DEFINICIÓN DE PREGUNTAS (valores para calcular promedio)
+// =====================================================
+const PREGUNTAS = [
+  {
+    nombre: "cocinas",
+    texto: "1. ¿Cada cuánto cocinas en tu casa?",
+    opciones: {
+      1: "Todos los días, varias veces al día",
+      2: "Todos los días, una vez al día",
+      3: "Varias veces por semana",
+      4: "Una vez por semana",
+      5: "Casi nunca cocino"
+    }
+  },
+  {
+    nombre: "estufa",
+    texto: "2. ¿Cuántas veces prendes la estufa al día?",
+    opciones: {
+      0: "0 veces (no prendo la estufa)",
+      1: "1 vez al día",
+      2: "2 veces al día",
+      3: "3 veces al día",
+      5: "Más de 3 veces al día (se cuenta como 5)"
+    }
+  },
+  {
+    nombre: "revision",
+    texto: "3. ¿Cómo te aseguras de que NO hay fuga de gas al cambiar el tanque?",
+    opciones: {
+      1: "Reviso con agua jabonosa (más seguro)",
+      2: "Lo instala un técnico / alguien con experiencia",
+      3: "Uso un detector u otra herramienta",
+      4: "Solo aprieto la llave y confío",
+      5: "No reviso nada (menos seguro)"
+    }
+  },
+  {
+    nombre: "cambio",
+    texto: "4. ¿Cada cuánto cambias o recargas el tanque de gas?",
+    opciones: {
+      1: "Cada 2 semanas o menos",
+      2: "Una vez al mes",
+      3: "Cada 1 a 2 meses",
+      4: "Cada 3 meses o más",
+      5: "Solo cuando se acaba (sin control)"
+    }
+  },
+  {
+    nombre: "otros_lugares",
+    texto: "5. ¿Usas gas en otro lugar además de la cocina?",
+    opciones: {
+      1: "No, solo en la cocina",
+      2: "Sí, en el calentador de agua",
+      3: "Sí, en la ducha / calefón",
+      4: "Sí, en varios lugares",
+      5: "No uso gas en mi casa"
+    }
+  },
+  {
+    nombre: "usaria",
+    texto: "6. ¿Usarías un detector de gas en tu casa?",
+    opciones: {
+      1: "Sí, definitivamente",
+      2: "Probablemente sí",
+      3: "No estoy seguro/a",
+      4: "Probablemente no",
+      5: "No, no lo usaría"
+    }
+  }
+];
+
+const CLAVE = "encuesta_gas_detector_v1";
+
+// Cargar respuestas guardadas en el navegador
+function cargarDatos() {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function guardarDatos(datos) {
+  localStorage.setItem(CLAVE, JSON.stringify(datos));
+}
+
+// =====================================================
+// GUARDAR UNA RESPUESTA
+// =====================================================
+function guardarRespuesta() {
+  const respuesta = {};
+
+  for (const p of PREGUNTAS) {
+    const elegido = document.querySelector(`input[name="${p.nombre}"]:checked`);
+    if (!elegido) {
+      mostrarMensaje(`⚠️ Falta responder la pregunta ${p.texto.split(".")[0]}.`, "error");
+      window.scrollTo({ top: document.getElementById("mensaje").offsetTop - 120, behavior: "smooth" });
+      return;
+    }
+    respuesta[p.nombre] = Number(elegido.value);
+  }
+
+  respuesta.fecha = new Date().toLocaleString("es", { dateStyle: "short", timeStyle: "short" });
+
+  const datos = cargarDatos();
+  datos.push(respuesta);
+  guardarDatos(datos);
+
+  mostrarMensaje(`✅ Respuesta #${datos.length} guardada correctamente. ¡Gracias!`, "ok");
+  borrarFormulario();
+  renderizarResultados();
+}
+
+function borrarFormulario() {
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+}
+
+function mostrarMensaje(texto, tipo) {
+  const m = document.getElementById("mensaje");
+  m.className = "mensaje " + tipo;
+  m.textContent = texto;
+  if (tipo === "ok") {
+    setTimeout(() => { m.className = "mensaje"; }, 3500);
+  }
+}
+
+// =====================================================
+// RESULTADOS Y PROMEDIOS
+// =====================================================
+function renderizarResultados() {
+  const datos = cargarDatos();
+  const cont = document.getElementById("resultados");
+  cont.innerHTML = "";
+
+  document.getElementById("totalRespuestas").textContent = datos.length;
+
+  if (datos.length === 0) {
+    document.getElementById("pctDetector").textContent = "—";
+    document.getElementById("promCocina").textContent = "—";
+    document.getElementById("promEstufa").textContent = "—";
+    cont.innerHTML = '<p class="sin-datos">Aún no hay respuestas guardadas. Llena el formulario y presiona “Guardar respuesta”.</p>';
+    return;
+  }
+
+  // Resumen superior
+  const usarian = datos.filter(d => d.usaria === 1 || d.usaria === 2).length;
+  document.getElementById("pctDetector").textContent = Math.round(usarian / datos.length * 100) + "%";
+
+  const promCocina = promedio(datos.map(d => d.cocinas));
+  document.getElementById("promCocina").textContent = promCocina.toFixed(1);
+
+  const promEstufa = promedio(datos.map(d => d.estufa));
+  document.getElementById("promEstufa").textContent = promEstufa.toFixed(1);
+
+  // Detalle por pregunta
+  for (const p of PREGUNTAS) {
+    const conteo = {};
+    const valores = [];
+
+    for (const d of datos) {
+      const v = d[p.nombre];
+      conteo[v] = (conteo[v] || 0) + 1;
+      valores.push(v);
+    }
+
+    const prom = promedio(valores);
+    const etiquetaProm = etiquetaMasCercana(p, prom);
+
+    const div = document.createElement("div");
+    div.className = "resultado-pregunta";
+
+    let html = `
+      <h4>${p.texto}</h4>
+      <div class="promedio">Promedio: ${prom.toFixed(2)} → en general responden: “${etiquetaProm}”</div>
+    `;
+
+    // Ordenar opciones por valor numérico
+    const claves = Object.keys(p.opciones).map(Number).sort((a, b) => a - b);
+
+    for (const k of claves) {
+      const n = conteo[k] || 0;
+      const pct = Math.round(n / datos.length * 100);
+      html += `
+        <div class="fila-resultado">
+          <div class="etiqueta">
+            <span>${p.opciones[k]}</span>
+            <span>${n} (${pct}%)</span>
+          </div>
+          <div class="barra-fondo">
+            <div class="barra" style="width:${pct}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    div.innerHTML = html;
+    cont.appendChild(div);
+  }
+}
+
+function promedio(valores) {
+  if (!valores.length) return 0;
+  return valores.reduce((a, b) => a + b, 0) / valores.length;
+}
+
+// Devuelve la opción cuyo valor es más cercano al promedio
+function etiquetaMasCercana(p, prom) {
+  const claves = Object.keys(p.opciones).map(Number);
+  let mejor = claves[0];
+  for (const k of claves) {
+    if (Math.abs(k - prom) < Math.abs(mejor - prom)) mejor = k;
+  }
+  return p.opciones[mejor];
+}
+
+// =====================================================
+// EXPORTAR CSV (para abrir en Excel y graficar)
+// =====================================================
+function exportarCSV() {
+  const datos = cargarDatos();
+  if (datos.length === 0) {
+    mostrarMensaje("⚠️ No hay datos para exportar todavía.", "error");
+    return;
+  }
+
+  let csv = "Fecha;Cocina cada;Veces estufa/dia;Revision al cambiar tanque;Cada cuanto cambia el gas;Gas en otros lugares;Usaria el detector\n";
+
+  for (const d of datos) {
+    const fila = [
+      d.fecha,
+      PREGUNTAS[0].opciones[d.cocinas],
+      PREGUNTAS[1].opciones[d.estufa],
+      PREGUNTAS[2].opciones[d.revision],
+      PREGUNTAS[3].opciones[d.cambio],
+      PREGUNTAS[4].opciones[d.otros_lugares],
+      PREGUNTAS[5].opciones[d.usaria]
+    ].map(t => `"${t}"`).join(";");
+    csv += fila + "\n";
+  }
+
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "encuesta_detector_gas.csv";
+  a.click();
+}
+
+// =====================================================
+// REINICIAR
+// =====================================================
+function reiniciarTodo() {
+  if (confirm("¿Seguro que quieres borrar TODAS las respuestas guardadas? Esta acción no se puede deshacer.")) {
+    guardarDatos([]);
+    renderizarResultados();
+    mostrarMensaje("🗑️ Todos los datos fueron borrados.", "ok");
+  }
+}
+
+// Renderizar al abrir la página
+renderizarResultados();
+</script>
+</body>
+</html>
